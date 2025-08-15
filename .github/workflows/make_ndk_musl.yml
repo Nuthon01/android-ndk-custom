@@ -237,9 +237,13 @@ jobs:
               $HOME/yasm/build/bin/vsyasm \
               $HOME/python/python
           do
-              ${TOOLCHAIN}/bin/strip "$file"
+              if [ -f "$file" ]; then
+                ${TOOLCHAIN}/bin/strip "$file" && echo "Success" || echo "Failed"
+              else
+                echo "Warning: File not found - $file"
+              fi
           done
-
+       
       - name: Get LLVM
         run: curl -LkSs https://github.com/${{ github.repository_owner }}/llvm-custom/releases/download/llvm-r${{inputs.version}}/bolt+clang+clang-tools-extra+lld-r${{inputs.version}}-${{matrix.target}}.tar.xz | tar -xJf -
 

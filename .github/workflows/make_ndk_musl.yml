@@ -63,7 +63,7 @@ jobs:
 
       - name: Build Extra Dependencies
         run: |
-          TOOLCHAIN=${PWD}/zig-as-llvm
+          TOOLCHAIN="${PWD}/zig-as-llvm"
           NDK_DIR="${{ runner.temp }}/android-ndk-r${{inputs.version}}"
           SHADER_TOOLS_BIN="$NDK_DIR/shader-tools/linux-x86_64"
           PREBUILT_BIN="$NDK_DIR/prebuilt/linux-x86_64/bin"

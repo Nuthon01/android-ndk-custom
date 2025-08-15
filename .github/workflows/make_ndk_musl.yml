@@ -349,7 +349,7 @@ jobs:
             
             for file in \
                 ${NDK}/ndk-build \
-                ${NDK}/build/ndk-build \
+                ${NDK}/build/ndk-build
             do
                 sed -i "1s|^.*$|#!/system/bin/sh|g" $file
             done            

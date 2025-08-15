@@ -214,15 +214,15 @@ jobs:
           --without-ensurepip \
           CONFIG_SITE=config.site \
           TARGET="${{ matrix.target }}" \
-          export CC=${TOOLCHAIN}/bin/cc \
-          export AS=${TOOLCHAIN}/bin/cc \
-          export CXX=${TOOLCHAIN}/bin/c++ \
-          export LD=${TOOLCHAIN}/bin/ld \
-          export OBJCOPY=${TOOLCHAIN}/bin/objcopy \
-          export READELF=$NDK_DIR/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-readelf \
-          export AR=${TOOLCHAIN}/bin/ar \
-          export RANLIB=${TOOLCHAIN}/bin/ranlib \
-          export STRIP=${TOOLCHAIN}/bin/strip \
+          CC=${TOOLCHAIN}/bin/cc \
+          AS=${TOOLCHAIN}/bin/cc \
+          CXX=${TOOLCHAIN}/bin/c++ \
+          LD=${TOOLCHAIN}/bin/ld \
+          OBJCOPY=${TOOLCHAIN}/bin/objcopy \
+          READELF=$NDK_DIR/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-readelf \
+          AR=${TOOLCHAIN}/bin/ar \
+          RANLIB=${TOOLCHAIN}/bin/ranlib \
+          STRIP=${TOOLCHAIN}/bin/strip \
           LDSHARED="${TOOLCHAIN}/bin/cc -shared -fPIC" \
           CFLAGS="-fstack-protector-strong -fsanitize=undefined -static -Wno-error=date-time" \
           CXXFLAGS="-fstack-protector-strong -fsanitize=undefined -static -Wno-error=date-time" \
@@ -345,6 +345,13 @@ jobs:
             do
                 sed -i "s|linux-x86_64|linux-${ARCH}|g" $file
             done
+            
+            for file in \
+                ${NDK}/ndk-build \
+                ${NDK}/build/ndk-build \
+            do
+                sed -i '1s|^.*$|#!/system/bin/sh|' ${file}
+            done            
           fi
 
           sed -i -E '/^if\(CMAKE_HOST_SYSTEM_NAME STREQUAL Linux\)$/,/^endif\(\)$/c\

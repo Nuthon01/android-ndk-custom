@@ -48,7 +48,8 @@ jobs:
         run: |
           git clone https://github.com/${{ github.repository_owner }}/zig-as-llvm
           cp -R $ROOTDIR/patches/musl/zig/* $(whereis zig | awk '{print $2}' | xargs dirname)
-
+          ls -la zig-as-llvm/bin/
+          
       - name: Get Official NDK
         run: |
           echo "Downloading NDK r${{inputs.version}}..."
@@ -86,13 +87,13 @@ jobs:
           --prefix="${PWD}/build" \
           --build=x86_64-linux-gnu \
           --host=${{ matrix.target }} \
-          export CC=${TOOLCHAIN}/bin/cc \
-          export CXX=${TOOLCHAIN}/bin/c++ \
-          export LD=${TOOLCHAIN}/bin/ld \
-          export OBJCOPY=${TOOLCHAIN}/bin/objcopy \
-          export AR=${TOOLCHAIN}/bin/ar \
-          export RANLIB=${TOOLCHAIN}/bin/ranlib \
-          export STRIP=${TOOLCHAIN}/bin/strip \
+          CC=${TOOLCHAIN}/bin/cc \
+          CXX=${TOOLCHAIN}/bin/c++ \
+          LD=${TOOLCHAIN}/bin/ld \
+          OBJCOPY=${TOOLCHAIN}/bin/objcopy \
+          AR=${TOOLCHAIN}/bin/ar \
+          RANLIB=${TOOLCHAIN}/bin/ranlib \
+          STRIP=${TOOLCHAIN}/bin/strip \
           CFLAGS="-fstack-protector-strong -fsanitize=undefined -static" \
           CXXFLAGS="-fstack-protector-strong -fsanitize=undefined -static" \
           LDFLAGS="-static" \
@@ -122,13 +123,13 @@ jobs:
           --build=x86_64-linux-gnu \
           --host=${{ matrix.target }} \
           --disable-nls \
-          export CC=${TOOLCHAIN}/bin/cc \
-          export CXX=${TOOLCHAIN}/bin/c++ \
-          export LD=${TOOLCHAIN}/bin/ld \
-          export OBJCOPY=${TOOLCHAIN}/bin/objcopy \
-          export AR=${TOOLCHAIN}/bin/ar \
-          export RANLIB=${TOOLCHAIN}/bin/ranlib \
-          export STRIP=${TOOLCHAIN}/bin/strip \
+          CC=${TOOLCHAIN}/bin/cc \
+          CXX=${TOOLCHAIN}/bin/c++ \
+          LD=${TOOLCHAIN}/bin/ld \
+          OBJCOPY=${TOOLCHAIN}/bin/objcopy \
+          AR=${TOOLCHAIN}/bin/ar \
+          RANLIB=${TOOLCHAIN}/bin/ranlib \
+          STRIP=${TOOLCHAIN}/bin/strip \
           CFLAGS="-fstack-protector-strong -static -fwrapv -Wno-error=date-time" \
           CXXFLAGS="-fstack-protector-strong -static -fwrapv -Wno-error=date-time" \
           LDFLAGS="-static"

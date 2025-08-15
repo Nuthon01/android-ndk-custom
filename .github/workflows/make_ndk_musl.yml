@@ -86,13 +86,13 @@ jobs:
           --prefix="${PWD}/build" \
           --build=x86_64-linux-gnu \
           --host=${{ matrix.target }} \
-          CC=${TOOLCHAIN}/bin/cc \
-          CXX=${TOOLCHAIN}/bin/c++ \
-          LD=${TOOLCHAIN}/bin/ld \
-          OBJCOPY=${TOOLCHAIN}/bin/objcopy \
-          AR=${TOOLCHAIN}/bin/ar \
-          RANLIB=${TOOLCHAIN}/bin/ranlib \
-          STRIP=${TOOLCHAIN}/bin/strip \
+          export CC=${TOOLCHAIN}/bin/cc \
+          export CXX=${TOOLCHAIN}/bin/c++ \
+          export LD=${TOOLCHAIN}/bin/ld \
+          export OBJCOPY=${TOOLCHAIN}/bin/objcopy \
+          export AR=${TOOLCHAIN}/bin/ar \
+          export RANLIB=${TOOLCHAIN}/bin/ranlib \
+          export STRIP=${TOOLCHAIN}/bin/strip \
           CFLAGS="-fstack-protector-strong -fsanitize=undefined -static" \
           CXXFLAGS="-fstack-protector-strong -fsanitize=undefined -static" \
           LDFLAGS="-static" \
@@ -122,13 +122,13 @@ jobs:
           --build=x86_64-linux-gnu \
           --host=${{ matrix.target }} \
           --disable-nls \
-          CC=${TOOLCHAIN}/bin/cc \
-          CXX=${TOOLCHAIN}/bin/c++ \
-          LD=${TOOLCHAIN}/bin/ld \
-          OBJCOPY=${TOOLCHAIN}/bin/objcopy \
-          AR=${TOOLCHAIN}/bin/ar \
-          RANLIB=${TOOLCHAIN}/bin/ranlib \
-          STRIP=${TOOLCHAIN}/bin/strip \
+          export CC=${TOOLCHAIN}/bin/cc \
+          export CXX=${TOOLCHAIN}/bin/c++ \
+          export LD=${TOOLCHAIN}/bin/ld \
+          export OBJCOPY=${TOOLCHAIN}/bin/objcopy \
+          export AR=${TOOLCHAIN}/bin/ar \
+          export RANLIB=${TOOLCHAIN}/bin/ranlib \
+          export STRIP=${TOOLCHAIN}/bin/strip \
           CFLAGS="-fstack-protector-strong -static -fwrapv -Wno-error=date-time" \
           CXXFLAGS="-fstack-protector-strong -static -fwrapv -Wno-error=date-time" \
           LDFLAGS="-static"
@@ -213,15 +213,15 @@ jobs:
           --without-ensurepip \
           CONFIG_SITE=config.site \
           TARGET="${{ matrix.target }}" \
-          CC=${TOOLCHAIN}/bin/cc \
-          AS=${TOOLCHAIN}/bin/cc \
-          CXX=${TOOLCHAIN}/bin/c++ \
-          LD=${TOOLCHAIN}/bin/ld \
-          OBJCOPY=${TOOLCHAIN}/bin/objcopy \
-          READELF=$NDK_DIR/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-readelf \
-          AR=${TOOLCHAIN}/bin/ar \
-          RANLIB=${TOOLCHAIN}/bin/ranlib \
-          STRIP=${TOOLCHAIN}/bin/strip \
+          export CC=${TOOLCHAIN}/bin/cc \
+          export AS=${TOOLCHAIN}/bin/cc \
+          export CXX=${TOOLCHAIN}/bin/c++ \
+          export LD=${TOOLCHAIN}/bin/ld \
+          export OBJCOPY=${TOOLCHAIN}/bin/objcopy \
+          export READELF=$NDK_DIR/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-readelf \
+          export AR=${TOOLCHAIN}/bin/ar \
+          export RANLIB=${TOOLCHAIN}/bin/ranlib \
+          export STRIP=${TOOLCHAIN}/bin/strip \
           LDSHARED="${TOOLCHAIN}/bin/cc -shared -fPIC" \
           CFLAGS="-fstack-protector-strong -fsanitize=undefined -static -Wno-error=date-time" \
           CXXFLAGS="-fstack-protector-strong -fsanitize=undefined -static -Wno-error=date-time" \

@@ -14,6 +14,8 @@ jobs:
     name: Make NDK musl
     runs-on: ubuntu-24.04
     env:
+      OWNER: ${{github.repository_owner}}
+      ROOTDIR: ${{github.workspace}}
       ZIG_TARGET: ${{matrix.target}}
     strategy:
       fail-fast: false
@@ -46,8 +48,9 @@ jobs:
       - name: Setup Zig Toolchain
         run: |
           git clone https://github.com/${{ github.repository_owner }}/zig-as-llvm
-          cp -R ${{github.workspace}}/patches/musl/zig/* $(whereis zig | awk '{print $2}' | xargs dirname)
-
+          cp -R $ROOTDIR/patches/musl/zig/* $(whereis zig | awk '{print $2}' | xargs dirname)
+          ls -la zig-as-llvm/bin/
+          
       - name: Get Official NDK
         run: |
           echo "Downloading NDK r${{inputs.version}}..."
@@ -62,7 +65,7 @@ jobs:
 
       - name: Build Extra Dependencies
         run: |
-          TOOLCHAIN=${PWD}/zig-as-llvm
+          TOOLCHAIN="${PWD}/zig-as-llvm"
           NDK_DIR="${{ runner.temp }}/android-ndk-r${{inputs.version}}"
           SHADER_TOOLS_BIN="$NDK_DIR/shader-tools/linux-x86_64"
           PREBUILT_BIN="$NDK_DIR/prebuilt/linux-x86_64/bin"
@@ -79,8 +82,8 @@ jobs:
           curl -LkSs https://ftp.gnu.org/gnu/make/make-$MAKE_VERSION.tar.gz | gzip -d | tar -x
           mv make-$MAKE_VERSION make
           cd make
-          cp ${{github.workspace}}/config/config.sub build-aux
-          cp ${{github.workspace}}/config/config.guess build-aux
+          cp $ROOTDIR/config/config.sub build-aux
+          cp $ROOTDIR/config/config.guess build-aux
           ./configure \
           --prefix="${PWD}/build" \
           --build=x86_64-linux-gnu \
@@ -114,8 +117,8 @@ jobs:
           curl -LkSs http://deb.debian.org/debian/pool/main/y/yasm/yasm_$YASM_VERSION.orig.tar.gz | gzip -d | tar -x
           mv yasm-$YASM_VERSION yasm
           cd yasm
-          cp ${{github.workspace}}/config/config.sub config
-          cp ${{github.workspace}}/config/config.guess config
+          cp $ROOTDIR/config/config.sub config
+          cp $ROOTDIR/config/config.guess config
           ./configure \
           --prefix="${PWD}/build" \
           --build=x86_64-linux-gnu \
@@ -151,11 +154,11 @@ jobs:
           curl -LkSs "https://android.googlesource.com/platform/external/shaderc/glslang/+archive/$GLSLANG_HASH.tar.gz" | tar -xz
           cd "$HOME/shaderc/third_party/spirv-tools"
           git init --quiet
-          git apply ${{github.workspace}}/patches/ndk/spirv/full_static.patch
+          git apply $ROOTDIR/patches/ndk/spirv/full_static.patch
           rm -rf .git
           cd "$HOME/shaderc"
           git init --quiet
-          git apply ${{github.workspace}}/patches/ndk/shaderc/full_static.patch
+          git apply $ROOTDIR/patches/ndk/shaderc/full_static.patch
           rm -rf .git
           cmake -S "$HOME/shaderc" -B "$HOME/shaderc/build" -G Ninja \
             -DCMAKE_INSTALL_PREFIX="$HOME/shaderc/install" \
@@ -236,9 +239,13 @@ jobs:
               $HOME/yasm/build/bin/vsyasm \
               $HOME/python/python
           do
-              ${TOOLCHAIN}/bin/strip "$file"
+              if [ -f "${TOOLCHAIN}/bin/strip" ]; then
+                ${TOOLCHAIN}/bin/strip "$file" && echo "Success" || echo "Failed"
+              else
+                $NDK_DIR/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip "$file"
+              fi
           done
-
+       
       - name: Get LLVM
         run: curl -LkSs https://github.com/${{ github.repository_owner }}/llvm-custom/releases/download/llvm-r${{inputs.version}}/bolt+clang+clang-tools-extra+lld-r${{inputs.version}}-${{matrix.target}}.tar.xz | tar -xJf -
 
@@ -339,6 +346,13 @@ jobs:
             do
                 sed -i "s|linux-x86_64|linux-${ARCH}|g" $file
             done
+            
+            for file in \
+                ${NDK}/ndk-build \
+                ${NDK}/build/ndk-build
+            do
+                sed -i "1s|^.*$|#!/system/bin/sh|g" $file
+            done            
           fi
 
           sed -i -E '/^if\(CMAKE_HOST_SYSTEM_NAME STREQUAL Linux\)$/,/^endif\(\)$/c\
